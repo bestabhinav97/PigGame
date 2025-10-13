@@ -6,7 +6,7 @@ def displayMenu():
     print("2.Show statistics")
     print("3.Cheat Mode")
     print("4. Display Rules of the Game")
-    
+
     
 while True:
     displayMenu()
@@ -21,7 +21,7 @@ while True:
     elif choice == "3":
         print("Running in cheat mode")
         game = Game()
-        game.cheatMode()
+        game.cheatGame()
     elif choice == "0":
         print("EXITING")
         break
