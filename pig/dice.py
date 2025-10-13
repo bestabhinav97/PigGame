@@ -1,6 +1,7 @@
 import random
 
-class Dice: 
+class Dice:
+   
     def roll(self):
         number = random.randint(1,6)
         return number
@@ -8,4 +9,7 @@ class Dice:
     def cheatDice(self):
         number = random.randint(5,6)
         return number
+    
+    
+        
 

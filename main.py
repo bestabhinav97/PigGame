@@ -11,9 +11,10 @@ def displayMenu():
 while True:
     displayMenu()
     choice = input("Enter your choice: ")
+    print("\n\n")
     
     if choice == "1":
-        print("Starting game...")  # Debug line to see if this runs
+        print("Starting game...\n\n")  # Debug line to see if this runs
         game = Game()
         game.playGame()
     elif choice == "2":
