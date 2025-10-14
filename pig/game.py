@@ -8,15 +8,20 @@ class Game():
 
     def roll(self): 
         return self.dice.roll()
-
-    def checkRolls(self,die1,die2):
-        if die1!=1 and die2 != 1:
-            score = die1 + die2
-            return score
+    
+    def cheatRoll(self):
+        return self.dice.cheatDiceRoll()
+    
+    def checkRolls(self, die1, die2):
+        if die1 == 1 and die2 == 1:
+            return 2
         elif die1 == 1 or die2 == 1:
             return 1
-        elif die1 == 1 and die2 == 1:
-            return 2
+        else:
+            return die1 + die2
+
+
+
     
     
 
@@ -44,25 +49,30 @@ class Game():
         gameOver = False
         while gameOver == False:
             
+            
             print(f"{players[currentPlayer].name}'s TURN \n")
-
-            rollChoice = input("ENTER R TO ROLL: ")
-            if rollChoice == "R" or "r":
+            rollChoice = input("ENTER R TO ROLL or quit to leave the game: ").strip().lower()
+            if rollChoice == "r":
                 die1 = self.dice.roll()
                 die2 = self.dice.roll()
+            elif rollChoice == "quit":
+                print("QUITING GAME")
+                gameOver = True
+                break
             else:
-                print("INVALID CHOICE")
+                print("INVALID CHOICE! Enter Again")
+                continue
             
             
             checkValue = self.checkRolls(die1,die2)
             print(f"You rolled a {die1} and a {die2}\n")
             if checkValue == 1:
-                print("OOPS  YOU ROLLED ONE ONE, YOU LOOSE THE ROUND SCORE")
+                print("😬 OOPS  YOU ROLLED ONE ONE, YOU LOOSE THE ROUND SCORE")
                 print(f"{players[currentPlayer].name}'s current total score is {players[currentPlayer].totalScore} \n")
                 players[currentPlayer].runningScore = 0
                 currentPlayer = 1-currentPlayer
             elif checkValue == 2:
-                print("SNAKE EYE!!!!   YOU LOOSE ALL THE POINTS")
+                print("🐍 SNAKE EYE - YOU LOOSE ALL THE POINTS \n")
                 print(f"{players[currentPlayer].name}'s current total score is {players[currentPlayer].totalScore} \n")
                 players[currentPlayer].runningScore = 0
                 players[currentPlayer].totalScore = 0
@@ -82,7 +92,7 @@ class Game():
                         
                         if checkValueRepeat == 1:
                             print(f"You rolled a {die1} and a {die2}")
-                            print("OOPS, YOU LOOSE THE ROUND SCORE")
+                            print("😬 OOPS, YOU LOOSE THE ROUND SCORE")
                             print(f"{players[currentPlayer].name}'s TOTAL SCORE IS {players[currentPlayer].totalScore}\n")
                             print
                             players[currentPlayer].runningScore = 0
@@ -91,7 +101,7 @@ class Game():
                         
                         elif checkValueRepeat == 2:
                             print(f"You rolled a {die1} and a {die2}")
-                            print("YOU LOOSE ALL THE POINTS \n")
+                            print("🐍 SNAKE EYE - YOU LOOSE ALL THE POINTS \n")
                             players[currentPlayer].runningScore = 0
                             players[currentPlayer].totalScore = 0
                             currentPlayer = 1-currentPlayer
@@ -102,12 +112,20 @@ class Game():
                             players[currentPlayer].runningScore = players[currentPlayer].runningScore + checkValueRepeat
                             players[currentPlayer].totalScore = players[currentPlayer].runningScore
                             print(f"{players[currentPlayer].name}'s current running score is {players[currentPlayer].runningScore} ")
+                            if players[currentPlayer].totalScore >= 20:
+                                print(f"🎉 🎉 🎉 CONGRATULATION {players[currentPlayer].name} IS THE WINNER!!!! 🎉 🎉 🎉")
+                                gameOver = True
+                                break
                             #players[currentPlayer].runningScore = 0
                             nextChoice = input("1.HOLD or 2.REPEAT")
                             if nextChoice == "1":
                                 players[currentPlayer].totalScore += players[currentPlayer].runningScore
                                 players[currentPlayer].runningScore = 0
                                 print(f"{players[currentPlayer].name}'s TOTAL SCORE IS {players[currentPlayer].totalScore}\n")
+                                if players[currentPlayer].totalScore >= 20:
+                                    print(f"🎉 🎉 🎉 CONGRATULATION {players[currentPlayer].name} IS THE WINNER!!!! 🎉 🎉 🎉")
+                                    gameOver = True
+                                    break
                                 repeateTurn = False  # end turn
                             elif nextChoice == "2":
                                 repeateTurn = True  # keep rolling
@@ -123,9 +141,30 @@ class Game():
                     players[currentPlayer].runningScore = 0
                     currentPlayer = 1-currentPlayer
 
-            if players[currentPlayer].totalScore > 20:
-                print(f"CONGRATULATION {players[currentPlayer].name} IS THE WINNER!!!!")
-                gameOver = True           
+            
+
+
+    def cheatGame(self):
+        print("ENTER THE GAME IN CHEAT MODE....")
+        print("YOU ALWAYS ROLL 6 and 6 to reach the end of the game faster.")
+
+        playerName = input("Enter you player name: ")
+        player = Player(playerName)
+        computerScore = 0
+
+        gameOver = False
+
+        while gameOver:
+            roll = input("Press R to Roll: ")
+            if roll == "r" or "R":
+                die1 = self.cheatRoll()
+                die2 = self.cheatRoll()
+
+            
+
+
+
+
 
                         
 

@@ -14,7 +14,7 @@ while True:
     print("\n\n")
     
     if choice == "1":
-        print("Starting game...\n\n")  # Debug line to see if this runs
+        print("Starting game...\n\n")  
         game = Game()
         game.playGame()
     elif choice == "2":
