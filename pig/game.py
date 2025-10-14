@@ -55,6 +55,13 @@ class Game:
         while not gameOver:
             print(f"\n{players[currentPlayer].name}'s TURN")
 
+            # --- 🔹 Step 3: Allow name change at any time ---
+            name_choice = input("Press ENTER to continue or type 'name' to change your name: ").strip().lower()
+            if name_choice == "name":
+                new_name = input("Enter your new name: ").strip()
+                players[currentPlayer].change_name(new_name)
+                print(f"Your name is now {players[currentPlayer].name}.\n")
+
             is_computer_turn = ai is not None and currentPlayer == 1
             if is_computer_turn:
                 rollChoice = "r"
