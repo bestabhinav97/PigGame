@@ -133,7 +133,7 @@ class Game:
                             playerScore = int(input("Enter your total score manually: "))
                             players[currentPlayer].totalScore = playerScore
                             if players[currentPlayer].totalScore >= self.target:
-                                print(f"🏆 {players[currentPlayer].name} WINS (Cheated 😏) 🏆")
+                                print(f"🏆 {players[currentPlayer].name} WINS  🏆")
                                 gameOver = True
                                 break
                             currentPlayer = 1 - currentPlayer
