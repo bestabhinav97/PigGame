@@ -6,7 +6,7 @@ class Dice:
         number = random.randint(1,6)
         return number
     
-    def cheatDice(self):
+    def cheatDiceRoll(self):
         number = random.randint(5,6)
         return number
     

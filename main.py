@@ -1,30 +1,40 @@
 
 from pig.game import Game
-from pig.highscore import HighScore  
+from pig.highscore import HighScore
 
-def displayMenu():
-    print("1.Play Game")
-    print("2.Show statistics")
-    print("3.Exit")
 
-while True:
-    displayMenu()
-    choice = input("Enter your choice: ").strip()
-    print("\n")
+def main():
+    while True:
+        print("\n🎮 MAIN MENU 🎮")
+        print("1. Play Game")
+        print("2. Play with Cheat Mode 😏")
+        print("3. Show Statistics / High Scores")
+        print("4. Exit")
 
-    if choice == "1":
-        print("Starting game...\n")
-        game = Game()
-        game.playGame()
+        choice = input("Enter your choice: ").strip()
 
-    elif choice == "2":
-        print("Statistics / High Scores:\n")
-        hs = HighScore()
-        hs.display_scores()
+        if choice == "1":
+            print("Starting normal game...\n")
+            game = Game()
+            game.playGame(mode="normal")
 
-    elif choice in ("3", "0"):
-        print("Exiting game...")
-        break
+        elif choice == "2":
+            print("Starting CHEAT MODE... (be nice 😈)\n")
+            game = Game()
+            game.playGame(mode="cheat")
 
-    else:
-        print("Invalid choice, please try again.\n")
+        elif choice == "3":
+            print("Statistics / High Scores:\n")
+            hs = HighScore()
+            hs.display_scores()
+
+        elif choice == "4":
+            print("Exiting game... Goodbye!")
+            break
+
+        else:
+            print("Invalid choice, please try again.\n")
+
+
+if __name__ == "__main__":
+    main()
