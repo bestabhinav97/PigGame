@@ -1,36 +1,30 @@
-from pig.dice import Dice
+
 from pig.game import Game
 
-def displayMenu():
-    print("1.Play Game")
-    print("2.Show statistics")
-    print("3.Cheat Mode")
-    print("4. Display Rules of the Game")
-
-    
-while True:
-    displayMenu()
-    choice = input("Enter your choice: ")
-    print("\n\n")
-    
-    if choice == "1":
-        print("Starting game...\n\n")  
-        game = Game()
-        game.playGame()
-    elif choice == "2":
-        print("Statistics - to be implemented")
-    elif choice == "3":
-        print("Running in cheat mode")
-        game = Game()
-        game.cheatGame()
-    elif choice == "0":
-        print("EXITING")
-        break
-    else:
-        print("Invalid choice")
-
-    
 
 
-    
+def main():
+    game = Game()
+
+    while True:
+        print("\n🎮 MAIN MENU 🎮")
+        print("1. Play Normally")
+        print("2. Play with Cheat Mode")
+        print("3. Exit")
+
+        choice = input("Enter choice: ").strip()
+
+        if choice == "1":
+            game.playGame("normal")
+        elif choice == "2":
+            game.playGame("cheat")
+        elif choice == "3":
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice.")
+
+if __name__ == "__main__":
+    main()
+
 
