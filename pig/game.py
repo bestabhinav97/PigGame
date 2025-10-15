@@ -1,25 +1,29 @@
+
 from .player import Player
 from .dice import Dice
 from .intelligence import Intelligence
+from .highscore import HighScore
+
 
 class Game:
     def __init__(self):
         self.dice = Dice()
-        self.target = 100  # Winning score
+        self.target = 100  # Winning score 
+        self.highscore = HighScore()  # Highscore manager
 
     def roll(self):
         return self.dice.roll()
 
     def checkRolls(self, die1, die2):
-        # Snake eyes check first
+        """Return the result of dice rolls based on Pig rules."""
         if die1 == 1 and die2 == 1:
-            return 2
+            return 2  # Double 1s
         if die1 == 1 or die2 == 1:
-            return 1
+            return 1  # One die rolled a 1
         return die1 + die2
 
     def displayCheat(self):
-        print(""" 
+        print("""
         🎲 CHEAT MENU 🎲
         1. Roll 6 and 6
         2. Manually set your total score
@@ -29,11 +33,11 @@ class Game:
     def playGame(self, mode="normal"):
         cheatMode = (mode == "cheat")
 
-        print("PLAY AGAINST FRIEND OR COMPUTER")
+        print("PLAY AGAINST FRIEND OR COMPUTER\n")
         print("1 - Friend")
         print("2 - Computer")
         gameChoice = input("Enter your choice: ").strip()
-        
+
         ai = None
         if gameChoice == "1":
             p1Name = input("Enter player 1 name: ").strip() or "Player 1"
@@ -55,15 +59,36 @@ class Game:
             p2Name = input("Enter player 2 name: ").strip() or "Player 2"
             player2 = Player(p2Name)
 
+        # Register players in highscore
+        player1_id = self.highscore.get_or_create_player(player1.name)
+        player2_id = self.highscore.get_or_create_player(player2.name)
+
         players = [player1, player2]
+        player_ids = [player1_id, player2_id]
+
         currentPlayer = 0
         gameOver = False
 
         while not gameOver:
-            print(f"\n🎯 {players[currentPlayer].name}'s TURN 🎯")
+            current_player_obj = players[currentPlayer]
+            roller_name = current_player_obj.name
             is_computer_turn = ai is not None and currentPlayer == 1
+            roller_pronoun = "You" if not is_computer_turn else roller_name
 
-            # ==== CHEAT OPTIONS (only for Player 1 and cheat mode) ====
+            print(f"\n🎯 {roller_name}'s TURN 🎯")
+
+            # Allow name change for human players
+            if not is_computer_turn:
+                name_choice = input("Press ENTER to continue or type 'name' to change your name: ").strip().lower()
+                if name_choice == "name":
+                    new_name = input("Enter your new name: ").strip()
+                    player_ids[currentPlayer] = self.highscore.rename_player(player_ids[currentPlayer], new_name)
+                    current_player_obj.change_name(new_name)
+                    print(f"✅ Name changed successfully to {current_player_obj.name}")
+                    roller_name = current_player_obj.name
+                    roller_pronoun = "You"
+
+            # === Handle Roll Phase ===
             if cheatMode and currentPlayer == 0:
                 self.displayCheat()
                 cheatInput = input("Enter choice: ").strip()
@@ -71,102 +96,102 @@ class Game:
                     die1, die2 = 6, 6
                 elif cheatInput == "2":
                     playerScore = int(input("Enter your total score manually: "))
-                    players[currentPlayer].totalScore = playerScore
-                    if players[currentPlayer].totalScore >= self.target:
-                        print(f"🏆 {players[currentPlayer].name} WINS (Cheated 😏) 🏆")
-                        break
+                    current_player_obj.totalScore = playerScore
+                    if playerScore >= self.target:
+                        print(f"🏆 {roller_name} WINS (Cheated 😏) 🏆")
+                        # record winner/loser correctly
+                        self.highscore.record_game(player_ids[currentPlayer], playerScore, won=True)
+                        loser_index = 1 - currentPlayer
+                        self.highscore.record_game(player_ids[loser_index], players[loser_index].totalScore, won=False)
+                        gameOver = True
+                        continue
+                    # no win: pass the turn
                     currentPlayer = 1 - currentPlayer
                     continue
                 else:
-                    die1 = self.dice.roll()
-                    die2 = self.dice.roll()
+                    die1, die2 = self.dice.roll(), self.dice.roll()
             elif is_computer_turn:
-                print("Computer chooses: ROLL")
-                die1 = self.dice.roll()
-                die2 = self.dice.roll()
+                print(f"{roller_name} chooses: ROLL")
+                die1, die2 = self.dice.roll(), self.dice.roll()
             else:
-                input("Press ENTER to roll: ")
-                die1 = self.dice.roll()
-                die2 = self.dice.roll()
+                rollChoice = input("ENTER R TO ROLL: ").strip().lower()
+                if rollChoice != "r":
+                    print("INVALID CHOICE")
+                    continue
+                die1, die2 = self.dice.roll(), self.dice.roll()
 
-            print(f"You rolled a {die1} and a {die2}\n")
+            print(f"{roller_name} rolled a {die1} and a {die2}\n")
             checkValue = self.checkRolls(die1, die2)
 
-            # === Handle roll results ===
+            # === Roll outcomes ===
             if checkValue == 1:
-                print("❌ Rolled a ONE! Lose running score.")
-                players[currentPlayer].runningScore = 0
+                print(f"OOPS! {roller_pronoun.upper()} ROLLED A ONE — LOSE THIS ROUND SCORE.")
+                current_player_obj.runningScore = 0
                 currentPlayer = 1 - currentPlayer
                 continue
             elif checkValue == 2:
-                print("🐍 Snake Eyes! Lose ALL points!")
-                players[currentPlayer].runningScore = 0
-                players[currentPlayer].totalScore = 0
+                print(f"DOUBLE 1s! {roller_pronoun.upper()} LOSE ALL POINTS.")
+                current_player_obj.runningScore = 0
+                current_player_obj.totalScore = 0
                 currentPlayer = 1 - currentPlayer
                 continue
             else:
-                players[currentPlayer].runningScore += checkValue
-                print(f"{players[currentPlayer].name}'s running score: {players[currentPlayer].runningScore}")
+                current_player_obj.runningScore += checkValue
+                print(f"{roller_name}'s running score is {current_player_obj.runningScore}")
 
-            # === HOLD or ROLL AGAIN ===
+            # === Hold or Repeat ===
             while True:
                 if is_computer_turn:
-                    decision = ai.decide(players[currentPlayer].runningScore, players[currentPlayer].totalScore)
+                    decision = ai.decide(current_player_obj.runningScore, current_player_obj.totalScore)
                     repeatChoice = "1" if decision == "h" else "2"
-                    print(f"Computer chooses: {'HOLD' if repeatChoice == '1' else 'ROLL AGAIN'}")
+                    print(f"{roller_name} chooses: {'HOLD' if repeatChoice == '1' else 'ROLL AGAIN'}")
                 else:
                     repeatChoice = input("1. HOLD or 2. ROLL AGAIN: ").strip()
 
                 if repeatChoice == "1":
-                    players[currentPlayer].totalScore += players[currentPlayer].runningScore
-                    print(f"{players[currentPlayer].name}'s total score: {players[currentPlayer].totalScore}\n")
-                    players[currentPlayer].runningScore = 0
+                    # Add running to total
+                    current_player_obj.totalScore += current_player_obj.runningScore
+                    current_player_obj.runningScore = 0
+                    print(f"{roller_name}'s TOTAL SCORE IS {current_player_obj.totalScore}\n")
+
+                    # ✅ WIN CHECK BEFORE CHANGING TURN
+                    if current_player_obj.totalScore >= self.target:
+                        print(f"🏆 CONGRATULATIONS {roller_name} IS THE WINNER! 🏆")
+                        # Record using the *current* player (winner)
+                        self.highscore.record_game(player_ids[currentPlayer], current_player_obj.totalScore, won=True)
+                        loser_index = 1 - currentPlayer
+                        self.highscore.record_game(
+                            player_ids[loser_index],
+                            players[loser_index].totalScore,
+                            won=False
+                        )
+                        gameOver = True
+                    else:
+                        # No win: pass the turn
+                        currentPlayer = 1 - currentPlayer
                     break
+
                 elif repeatChoice == "2":
-                    # Allow cheat in repeat rolls too
-                    if cheatMode and currentPlayer == 0:
-                        self.displayCheat()
-                        cheatInput = input("Enter choice: ").strip()
-                        if cheatInput == "1":
-                            die1, die2 = 6, 6
-                        elif cheatInput == "2":
-                            playerScore = int(input("Enter your total score manually: "))
-                            players[currentPlayer].totalScore = playerScore
-                            if players[currentPlayer].totalScore >= self.target:
-                                print(f"🏆 {players[currentPlayer].name} WINS (Cheated 😏) 🏆")
-                                gameOver = True
-                                break
-                            currentPlayer = 1 - currentPlayer
-                            continue
-                        else:
-                            die1 = self.dice.roll()
-                            die2 = self.dice.roll()
-                    else:
-                        die1 = self.dice.roll()
-                        die2 = self.dice.roll()
+                    die1, die2 = self.dice.roll(), self.dice.roll()
+                    checkValueRepeat = self.checkRolls(die1, die2)
+                    print(f"{roller_name} rolled a {die1} and a {die2}\n")
 
-                    print(f"You rolled a {die1} and a {die2}")
-                    checkValue = self.checkRolls(die1, die2)
-                    if checkValue == 1:
-                        print("❌ Rolled a ONE! Lose running score.")
-                        players[currentPlayer].runningScore = 0
+                    if checkValueRepeat == 1:
+                        print(f"OOPS! {roller_pronoun.upper()} LOSE THE ROUND SCORE.")
+                        current_player_obj.runningScore = 0
+                        currentPlayer = 1 - currentPlayer
                         break
-                    elif checkValue == 2:
-                        print("🐍 Snake Eyes! Lose ALL points!")
-                        players[currentPlayer].runningScore = 0
-                        players[currentPlayer].totalScore = 0
+                    elif checkValueRepeat == 2:
+                        print(f"DOUBLE 1s! {roller_pronoun.upper()} LOSE ALL POINTS.")
+                        current_player_obj.runningScore = 0
+                        current_player_obj.totalScore = 0
+                        currentPlayer = 1 - currentPlayer
                         break
                     else:
-                        players[currentPlayer].runningScore += checkValue
-                        print(f"{players[currentPlayer].name}'s running score: {players[currentPlayer].runningScore}")
+                        current_player_obj.runningScore += checkValueRepeat
+                        print(f"{roller_name}'s running score is {current_player_obj.runningScore}")
                 else:
-                    print("Invalid choice, turn ends.")
-                    players[currentPlayer].runningScore = 0
+                    print("INVALID CHOICE, turn ends.")
+                    current_player_obj.runningScore = 0
+                    currentPlayer = 1 - currentPlayer
                     break
-
-            # === Win Check ===
-            if players[currentPlayer].totalScore >= self.target:
-                print(f"🏆 CONGRATULATIONS {players[currentPlayer].name} IS THE WINNER! 🏆")
-                break
-
-            currentPlayer = 1 - currentPlayer
