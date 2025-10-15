@@ -1,8 +1,16 @@
+# Virtual environment
+venv/
 .venv/
+
+# Python cache
 __pycache__/
 *.pyc
+
+# Coverage & docs
 .coverage
 htmlcov/
 doc/api/
 doc/uml/
+
+# Local game data
 highscore.json
