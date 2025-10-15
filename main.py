@@ -1,5 +1,6 @@
 
 from pig.game import Game
+from pig.highscore import HighScore  
 
 def displayMenu():
     print("1.Play Game")
@@ -15,10 +16,15 @@ while True:
         print("Starting game...\n")
         game = Game()
         game.playGame()
+
     elif choice == "2":
-        print("Statistics - to be implemented.\n")
-    elif choice == "3" or choice == "0":
+        print("Statistics / High Scores:\n")
+        hs = HighScore()
+        hs.display_scores()
+
+    elif choice in ("3", "0"):
         print("Exiting game...")
         break
+
     else:
         print("Invalid choice, please try again.\n")

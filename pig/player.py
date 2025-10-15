@@ -8,9 +8,9 @@ class Player:
 
     def change_name(self, new_name):
         """Change player's name."""
-        if new_name.strip():
-            self.name = new_name.strip()
-            print(f"✅ Name changed successfully to {self.name}")
+        new_name = new_name.strip()
+        if new_name:
+            self.name = new_name
         else:
             print("⚠️ Invalid name. Keeping previous name.")
 
