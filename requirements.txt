@@ -1,4 +1,4 @@
-astroid==4.0.1
+astroid==4.0.0a0
 black==25.9.0
 click==8.3.0
 coverage==7.10.7

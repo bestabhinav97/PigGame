@@ -1,4 +1,3 @@
-from .dice import Dice
 
 class Intelligence:
     """
@@ -8,18 +7,12 @@ class Intelligence:
     - Otherwise it keeps rolling until the turn total reaches the threshold.
     """
 
-    def __init__(self):
-        self.dice = Dice()
-
     _THRESHOLDS = {
         "easy": 8,
         "medium": 12,
         "hard": 18,
     }
 
-
-
-    
     def __init__(self, difficulty: str = "medium", target_score: int = 100) -> None:
         if difficulty not in self._THRESHOLDS:
             difficulty = "medium"
@@ -41,5 +34,3 @@ class Intelligence:
 
         # Otherwise roll again
         return "r"
-    
-    
