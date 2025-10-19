@@ -21,13 +21,14 @@ class Game:
         if die1 == 1 or die2 == 1:
             return 1  # One die rolled a 1
         return die1 + die2
-
+        
     def displayCheat(self):
         print("""
         🎲 CHEAT MENU 🎲
         1. Roll 6 and 6
         2. Manually set your total score
         3. Roll Normally
+        q. Quit
         """)
 
     def playGame(self, mode="normal"):
@@ -108,36 +109,47 @@ class Game:
                     # no win: pass the turn
                     currentPlayer = 1 - currentPlayer
                     continue
+                elif cheatInput == "q":
+                    gameOver = True
+                    break
                 else:
                     die1, die2 = self.dice.roll(), self.dice.roll()
             elif is_computer_turn:
                 print(f"{roller_name} chooses: ROLL")
                 die1, die2 = self.dice.roll(), self.dice.roll()
             else:
-                rollChoice = input("ENTER R TO ROLL: ").strip().lower()
-                if rollChoice != "r":
+                rollChoice = input("ENTER R TO ROLL or q to quit: ").strip().lower()
+                if rollChoice == "r":
+                    die1, die2 = self.dice.roll(), self.dice.roll()
+                elif rollChoice == "q":
+                    gameOver = True
+                    break
+                else:
                     print("INVALID CHOICE")
                     continue
-                die1, die2 = self.dice.roll(), self.dice.roll()
+                
 
-            print(f"{roller_name} rolled a {die1} and a {die2}\n")
+            print(f"\n{roller_name} rolled a {die1} and a {die2}, roll total = {die1 + die2}")
             checkValue = self.checkRolls(die1, die2)
+            self.dice.show(die1, die2)
 
             # === Roll outcomes ===
             if checkValue == 1:
                 print(f"OOPS! {roller_pronoun.upper()} ROLLED A ONE — LOSE THIS ROUND SCORE.")
+                self.dice.show(die1, die2)
                 current_player_obj.runningScore = 0
                 currentPlayer = 1 - currentPlayer
                 continue
             elif checkValue == 2:
                 print(f"DOUBLE 1s! {roller_pronoun.upper()} LOSE ALL POINTS.")
+                self.dice.show(die1, die2)
                 current_player_obj.runningScore = 0
                 current_player_obj.totalScore = 0
                 currentPlayer = 1 - currentPlayer
                 continue
             else:
                 current_player_obj.runningScore += checkValue
-                print(f"{roller_name}'s running score is {current_player_obj.runningScore}")
+                print(f"{roller_name}'s running score is {current_player_obj.runningScore}\n")
 
             # === Hold or Repeat ===
             while True:
@@ -174,7 +186,8 @@ class Game:
                 elif repeatChoice == "2":
                     die1, die2 = self.dice.roll(), self.dice.roll()
                     checkValueRepeat = self.checkRolls(die1, die2)
-                    print(f"{roller_name} rolled a {die1} and a {die2}\n")
+                    print(f"\n{roller_name} rolled a {die1} and a {die2}, roll total = {die1 + die2}")
+                    self.dice.show(die1, die2)
 
                     if checkValueRepeat == 1:
                         print(f"OOPS! {roller_pronoun.upper()} LOSE THE ROUND SCORE.")
@@ -183,13 +196,14 @@ class Game:
                         break
                     elif checkValueRepeat == 2:
                         print(f"DOUBLE 1s! {roller_pronoun.upper()} LOSE ALL POINTS.")
+                        self.dice.show(die1, die2)
                         current_player_obj.runningScore = 0
                         current_player_obj.totalScore = 0
                         currentPlayer = 1 - currentPlayer
                         break
                     else:
                         current_player_obj.runningScore += checkValueRepeat
-                        print(f"{roller_name}'s running score is {current_player_obj.runningScore}")
+                        print(f"{roller_name}'s running score is {current_player_obj.runningScore}\n")
                 else:
                     print("INVALID CHOICE, turn ends.")
                     current_player_obj.runningScore = 0
