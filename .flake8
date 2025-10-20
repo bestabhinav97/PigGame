@@ -1,0 +1,10 @@
+[flake8]
+max-line-length = 100
+extend-ignore = D107, D203, D213, D102
+docstring-convention = google
+exclude =
+    venv,
+    .venv,
+    __pycache__,
+    .git,
+    docs

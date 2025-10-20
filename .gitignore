@@ -1,0 +1,10 @@
+# .gitignore
+__pycache__/
+*.pyc
+venv/
+.DS_Store
+.pytest_cache/
+.mypy_cache/
+.coverage
+highscore.json
+.DS_Store
