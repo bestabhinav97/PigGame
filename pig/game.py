@@ -62,6 +62,7 @@ class Game:
             player1 = Player(p1Name)
             diff = input("Choose AI difficulty (easy/medium/hard): ").strip().lower()
             if diff not in ("easy", "medium", "hard"):
+                print("Invalid Choice: Defaulting to medium")
                 diff = "medium"
             ai = Intelligence(diff, target_score=self.target)
             player2 = Player(f"Computer({diff})")
@@ -92,23 +93,39 @@ class Game:
 
             # Allow name change
             if not is_computer_turn:
-                name_choice = (
-                    input(
-                        "Press ENTER to continue or type 'name' to change your name: "
+                while True:
+                    name_choice = (
+                        input(
+                            "Press ENTER to continue or type 'name' to change your name: "
+                        )
+                        .strip()
+                        .lower()
                     )
-                    .strip()
-                    .lower()
-                )
-                if name_choice == "name":
-                    new_name = input("Enter your new name: ").strip()
-                    player_ids[currentPlayer] = self.highscore.rename_player(
-                        player_ids[currentPlayer], new_name
-                    )
-                    current_player_obj.change_name(new_name)
-                    print(f"✅ Name changed successfully to {current_player_obj.name}")
-                    roller_name = current_player_obj.name
-                    roller_pronoun = "You"
 
+                    if name_choice == "name":
+                        new_name = input("Enter your new name: ").strip()
+                        player_ids[currentPlayer] = self.highscore.rename_player(
+                            player_ids[currentPlayer], new_name
+                        )
+                        current_player_obj.change_name(new_name)
+                        print(
+                            f"✅ Name changed successfully to {current_player_obj.name}"
+                        )
+                        roller_name = current_player_obj.name
+                        roller_pronoun = "You"
+                        break  # exit the prompt loop and continue the game flow
+
+                    elif name_choice == "":
+                        # just pressed Enter — continue without changing name
+                        break
+
+                    else:
+                        print(
+                            """
+                            ❌ Invalid input. Type 'name' to change your
+                            name or press ENTER to continue.
+                            """
+                        )
             # === Handle Roll Phase ===
             if cheatMode and currentPlayer == 0:
                 self.displayCheat()
@@ -250,10 +267,9 @@ class Game:
                             f"{roller_name}'s running score is {current_player_obj.runningScore}\n"
                         )
                 else:
-                    print("INVALID CHOICE, turn ends.")
-                    current_player_obj.runningScore = 0
-                    currentPlayer = 1 - currentPlayer
-                    break
+                    print("INVALID CHOICE, try again")
+                    continue
+
     # --- Test helper methods ---
 
     def check_winner(self, player_score, target_score=None):

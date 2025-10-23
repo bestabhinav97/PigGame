@@ -39,14 +39,14 @@ class TestGame(unittest.TestCase):
         "builtins.input",
         side_effect=[
             # Friend game setup
-            "1",
-            "Alice",
-            "Bob",
-            "",
-            "r",
-            "1",
-            "",
-            "q",
+            "1",  # friend mode
+            "Alice",  # player 1
+            "Bob",  # player 2
+            "",  # skip rename
+            "r",  # roll
+            "1",  # hold
+            "",  # skip rename (2nd player)
+            "q",  # quit game
         ],
     )
     @patch("pig.game.Dice.roll", side_effect=[3, 4])
@@ -138,17 +138,17 @@ def test_cheat_mode_range_method():
 @patch(
     "builtins.input",
     side_effect=[
-        "2",        # choose computer
-        "Alice",    # player name
-        "easy",     # AI difficulty
-        "",         # skip rename
-        "r",        # roll
-        "1",        # hold
-        "q",        # quit
-        "q",        # safety quit
+        "2",  # choose computer
+        "Alice",  # player name
+        "easy",  # AI difficulty
+        "",  # skip rename
+        "r",  # roll
+        "1",  # hold
+        "",  # skip rename again
+        "q",  # quit game
     ],
 )
-@patch("pig.game.Dice.roll", side_effect=[3, 4, 5, 2, 6, 1, 3, 4])
+@patch("pig.game.Dice.roll", side_effect=[3, 4, 5, 2, 6, 1])
 @patch("pig.game.Intelligence.decide", return_value="h")
 def test_playGame_computer_mode(mock_decide, mock_roll, mock_input):
     """Covers computer mode and AI decision branch in playGame."""
@@ -162,16 +162,16 @@ def test_playGame_computer_mode(mock_decide, mock_roll, mock_input):
 @patch(
     "builtins.input",
     side_effect=[
-        "1",        # friend mode
-        "Alice",    # player1
-        "Bob",      # player2
-        "name",     # rename
-        "Alicia",   # new name
-        "r",        # roll
-        "2",        # roll again
-        "1",        # hold
-        "q",        # quit
-        "q",
+        "1",  # friend mode
+        "Alice",  # player1
+        "Bob",  # player2
+        "name",  # rename option
+        "Alicia",  # new name
+        "r",  # roll
+        "2",  # roll again
+        "1",  # hold
+        "",  # skip rename next turn
+        "q",  # quit
     ],
 )
 @patch("pig.game.Dice.roll", side_effect=[6, 6, 5, 3, 2, 4])

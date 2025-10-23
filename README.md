@@ -10,11 +10,22 @@ The program follows a structure that includes the following classes: Game, Dice,
 
 To install and run the game on your system, follow these steps:
 
+INSTALATION FOR MAC
 ```bash
 git clone https://github.com/bestabhinav97/PigGame.git
 cd PigGame
 python3 -m venv venv
 source venv/bin/activate
+pip install -r requirements-alt.txt
+python main.py
+```
+
+INSTALLATION FOR WINDOWS
+```cmdPrompt
+git clone https://github.com/bestabhinav97/PigGame.git
+cd pigGame
+python venv -m venv
+venv\scripts\activate
 pip install -r requirements.txt
 python main.py
 ```
@@ -27,6 +38,10 @@ The project includes automated tests for all key components. To run the tests an
 pytest --cov=pig --cov-report=term-missing
 ```
 
+```cmdPrompt
+pytest
+```
+
 You can also check code style with:
 
 ```bash
@@ -34,11 +49,38 @@ flake8 --max-line-length=120 --docstring-convention=google pig tests
 pylint pig --disable=C0114,C0115,C0116
 ```
 
+```cmdPropmt
+flake8 .
+pylint pig
+```
+
 All tests pass successfully
 
 ## Documentation
 
 Documentation and diagrams are already included in the repository. The file docs/html/index.html opens the full HTML documentation in a browser. UML diagrams are located at docs/uml/classes.png (class diagram) and docs/uml/packages.png (package diagram). These were generated using pdoc and pyreverse.
+
+CREATING HTML DOCUMENTATION
+```CmdPrompt
+pdoc --output-dir docs/html pig
+```
+
+```Bash
+pdoc --output-dir docs/html pig
+```
+
+CREATING UML DIAGRAMS
+!!! MAKE SURE YOUR COMPUTER HAS GRAPHIVIZ INSTALLED AND ADDED TO SYSTEM PATH !!!
+```CmdPrompt
+mkdir docs\uml
+pyreverse -o png -p PigGame pig -d docs\uml
+```
+
+```Bash
+mkdir -p docs/uml
+pyreverse -o png -p PigGame pig -d docs/uml
+```
+
 
 ## Project Structure
 
